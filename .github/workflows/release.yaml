@@ -1,0 +1,39 @@
+name: release
+on:
+    workflow_dispatch:
+        inputs:
+            release-type:
+                type: choice
+                required: true
+                default: patch
+                description: 'Release type'
+                options:
+                  - major
+                  - minor
+                  - patch
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        environment: production
+        steps:
+          - name: setup-python
+            uses: actions/setup-python@v2
+            with:
+                python-version: 3.8
+          - name: checkout-main
+            uses: actions/checkout@v2
+            with:
+                fetch-depth: 0
+                token: ${{ secrets.REPOSITORY_TOKEN }}
+          - name: setup-git
+            run: |
+                git config --local user.name "NFSops Developers"
+                git config --local user.email "nfsopsdevelopers@gmail.com"
+          - name: install-package
+            run: pip install -e .[development]
+          - name: bump-version
+            run: |
+                CURRENT_VERSION=$(git tag --sort -v:refname | head -n 1 | cut -c 2-)
+                bumpversion --current-version ${CURRENT_VERSION:-0.0.0} ${{ github.event.inputs.release-type }}
+          - name: push-tag
+            run: git push origin --tags

@@ -1,0 +1,15 @@
+.idea/
+.vs/
+.vscode/
+.eggs/
+*.egg-info/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+venv/
+build/
+dist/
+.coverage
+*.rst
+*.lock
+*.tgz

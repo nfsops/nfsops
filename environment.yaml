@@ -1,0 +1,7 @@
+name: nfsops
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8.0
+  - rsync=3.1.*

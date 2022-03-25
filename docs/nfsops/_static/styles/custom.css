@@ -1,0 +1,92 @@
+:root {
+    --pst-font-family-base: Helvetica, Arial, var(--pst-font-family-base-system);
+    --pst-font-family-heading: Helvetica, Arial, var(--pst-font-family-base-system);
+    --pst-font-family-monospace: SFMono-Regular, Menlo, Source Code Pro, var(--pst-font-family-monospace-system);
+    --pst-color-primary: 0, 0, 0;
+    --pst-color-active-navigation: 0, 112, 186;
+    --pst-color-link: 0, 112, 186;
+    --pst-color-link-hover: 0, 112, 186;
+    --pst-color-headerlink: 0, 112, 186;
+}
+
+a.headerlink {
+    margin-left: 5px !important;
+    border-radius: 0.2rem !important;
+}
+
+code {
+    padding: 2px 4px !important;
+    background-color: #f5f7f9 !important;
+    border: none !important;
+    border-radius: 0.2rem !important;
+}
+
+pre, .highlight {
+    padding: 0px !important;
+    background-color: #f5f7f9 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0.2rem !important;
+}
+
+dt:target, span.highlighted {
+    background-color: #ffecb3 !important;
+}
+
+.highlight {
+    padding: 12px 20px !important;
+}
+
+.highlight .go {
+    font-style: normal !important;
+}
+
+div.deprecated {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 0.6rem 0.8rem 0.6rem !important;
+    overflow: hidden !important;
+    page-break-inside: avoid !important;
+    border-left: 0.2rem solid !important;
+    border-color: rgba(var(--pst-color-admonition-danger), 1) !important;
+    border-radius: 0.1rem !important;
+    box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.05),
+        0 0 0.05rem rgba(0, 0, 0, 0.1) !important;
+    transition: color 250ms, background-color 250ms, border-color 250ms !important;
+}
+
+div.deprecated p {
+    margin: 0 !important;
+    padding: 0 1.4rem !important;
+    margin-top: 0.4em !important;
+    color: rgba(var(--pst-color-paragraph), 1) !important;
+    display: block !important;
+}
+
+.versionmodified {
+    font-weight: bold;
+}
+
+.navbar-brand {
+    padding: 0.6rem 0 !important;
+}
+
+.navbar-light .navbar-nav li a.nav-link {
+    padding: .2rem .5rem !important;
+}
+
+.navbar-toggler {
+    margin: 0.5rem !important;
+}
+
+@media not screen and (min-width:960px) {
+    #navbar-collapsible {
+        padding: 0px 15px 15px !important;
+    }
+}
+
+@media screen and (min-width: 960px), screen and (max-width: 530px) {
+    .version-width {
+        max-width: 100px;
+    }
+}

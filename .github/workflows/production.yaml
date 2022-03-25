@@ -1,0 +1,26 @@
+name: production
+on:
+    push:
+        tags:
+          - 'v*.*.*'
+    workflow_dispatch:
+jobs:
+    build-publish:
+        runs-on: ubuntu-latest
+        environment: production
+        steps:
+          - name: setup-python
+            uses: actions/setup-python@v2
+            with:
+                python-version: 3.8
+          - name: checkout-main
+            uses: actions/checkout@v2
+          - name: install-package
+            run: pip install -e .[development]
+          - name: build-package
+            run: python setup.py bdist_wheel
+          - name: publish-package
+            env:
+                TWINE_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+                TWINE_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+                run: twine upload dist/*

@@ -1,0 +1,4 @@
+[MASTER]
+disable=logging-fstring-interpolation
+extension-pkg-whitelist = pydantic
+min-public-methods=0

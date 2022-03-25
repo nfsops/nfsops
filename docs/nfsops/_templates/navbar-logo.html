@@ -1,0 +1,34 @@
+{% if logo %}
+{% if not theme_logo_link %}
+<a class="navbar-brand" href="{{ pathto(master_doc) }}">
+    <img src="{{ pathto('_static/' + logo, 1) }}" class="logo mx-2" alt="logo">
+    <p class="title font-weight-bold d-inline mr-2">{{ project }}</p>
+    <p class="d-inline mr-2">
+        <span class="d-table-cell text-truncate small text-muted version-width">{{ version }}</span>
+    </p>
+</a>
+{% elif theme_logo_link[:4] == 'http' %}
+<a class="navbar-brand" href="{{ theme_logo_link }}">
+    <img src="{{ pathto('_static/' + logo, 1) }}" class="logo mx-2" alt="logo">
+    <p class="title font-weight-bold d-inline mr-2">{{ project }}</p>
+    <p class="d-inline mr-2">
+        <span class="d-table-cell text-truncate small text-muted version-width">{{ version }}</span>
+    </p>
+</a>
+{% else %}
+<a class="navbar-brand" href="{{ pathto(theme_logo_link) }}">
+    <img src="{{ pathto('_static/' + logo, 1) }}" class="logo mx-2" alt="logo">
+    <p class="title font-weight-bold d-inline mr-2">{{ project }}</p>
+    <p class="d-inline mr-2">
+        <span class="d-table-cell text-truncate small text-muted version-width">{{ version }}</span>
+    </p>
+</a>
+{% endif %}
+{% else %}
+<a class="navbar-brand" href="{{ pathto(master_doc) }}">
+    <p class="title font-weight-bold d-inline mr-2">{{ project }}</p>
+    <p class="d-inline mr-2">
+        <span class="d-table-cell text-truncate small text-muted version-width">{{ version }}</span>
+    </p>
+</a>
+{% endif %}
