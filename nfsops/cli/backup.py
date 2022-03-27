@@ -29,6 +29,19 @@ def main(
         None,
         '--name', '-n',
         help='Backup name for root context.'
+    ),
+    filter_path: Optional[str] = typer.Option(
+        None,
+        '--filter-path', '-f',
+        help=(
+            'Path matching pattern relative to template if root context, '
+            'relative to current working directory otherwise.'
+        )
+    ),
+    version_template: str = typer.Option(
+        '*_%Y-%m-%d_%H:%M',
+        '--version-template', '-v',
+        help='Template for backup versions.'
     )
 ):
     '''
@@ -36,7 +49,10 @@ def main(
 
     Parameters:
         ctx (typer.Context): Application context.
-        root_template (Optional[str]): Path template for backup name reference in the root context.
+        name (Optional[str]): Backup name for root context.
+        filter_path (Optional[str]): Path matching pattern relative to template if root context,
+            relative to current working directory otherwise.
+        version_template (str): Template for backup versions.
     Raises:
         typer.Exit: Expected parameters contain validation errors.
     '''
@@ -44,7 +60,11 @@ def main(
     try:
         ctx.obj = BackupOperator(
             ctx.obj,
-            BackupConfiguration(name=name)
+            BackupConfiguration(
+                name=name,
+                filter_path=filter_path,
+                version_template=version_template
+            )
         )
     except ValidationError as exception:
         typer.echo(exception)
@@ -64,9 +84,8 @@ def list_versions(ctx: typer.Context):
 
     try:
         operator = cast(BackupOperator, ctx.obj)
-
-        for backup_version in operator.list_versions():
-            typer.echo(utils.format_configuration_string(backup_version))
+        typer.echo(utils.tabulate_configuration_group(
+            operator.list_versions()))
     except Exception as exception:
         typer.echo(exception)
         raise typer.Exit(code=1)
@@ -103,7 +122,7 @@ def restore(
         operator = cast(BackupOperator, ctx.obj)
         report = operator.restore(options)
 
-        typer.echo(utils.format_configuration_string(report))
+        typer.echo(utils.tabulate_configuration_group([report]))
     except Exception as exception:
         typer.echo(exception)
         raise typer.Exit(code=1)

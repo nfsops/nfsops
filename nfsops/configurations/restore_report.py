@@ -2,7 +2,7 @@
 Restore report configuration model.
 '''
 
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import NonNegativeInt
 
@@ -16,10 +16,15 @@ class RestoreReportConfiguration(Configuration):
 
     #: Configuration type.
     type: Literal['restore-report'] = 'restore-report'
+    #: Backup name for root context.
+    name: str
+    #: Path matching pattern relative to template if root context,
+    #: relative to current working directory otherwise.
+    filter_path: str
     #: Single/initial backup version.
     version: NonNegativeInt
     #: Final backup version.
-    final_version: Optional[NonNegativeInt] = None
+    final_version: NonNegativeInt
 
 
 __all__ = [

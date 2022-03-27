@@ -29,7 +29,8 @@ class ContextConfiguration(Configuration):
     root_template: Optional[str] = Field(
         default_factory=lambda: os.getenv('NFSOPS_ROOT_TEMPLATE')
     )
-    #: Volume path. Defaults to `$HOME` for subpath context, `/var/nfs-shared` otherwise.
+    #: Context path. Defaults to `$PWD` (current working directory) for subpath context,
+    #: `/var/nfs-shared` otherwise.
     path: Optional[DirectoryPath] = Field(
         default_factory=lambda: os.getenv('NFSOPS_PATH')
     )
@@ -69,7 +70,7 @@ class ContextConfiguration(Configuration):
         values: Dict[str, Any]
     ) -> Optional[DirectoryPath]:
         '''
-        Return the default volume path based on context if the value is "None",
+        Return the default path based on context if the value is `None`,
         original value otherwise.
 
         Parameters:
@@ -83,7 +84,7 @@ class ContextConfiguration(Configuration):
             logger = utils.get_default_logger()
 
             context_type = values['context']
-            value = utils.get_default_volume_path(context_type)
+            value = utils.get_default_context_path(context_type)
 
             logger.info(
                 f'using "{value}" as default path for "{context_type}" context.'

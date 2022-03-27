@@ -40,7 +40,10 @@ def main(
         envvar='NFSOPS_PATH',
         exists=True,
         dir_okay=True,
-        help='Volume path. Defaults to `$HOME` for subpath context, `/var/nfs-shared` otherwise.'
+        help=(
+            'Context path. Defaults to `$PWD` (current working directory) for subpath context, '
+            '`/var/nfs-shared` otherwise.'
+        )
     )
 ):
     '''
@@ -51,7 +54,8 @@ def main(
         context (ContextType): Context type.
         root_template (Optional[str]): Path template for backup name reference in the root context.
         path (Optional[Path]):
-            Volume path. Defaults to `/var/nfs-shared` for subpath context, `$HOME` otherwise.
+            Context path. Defaults to `$PWD` (current working directory) for subpath context,
+            `/var/nfs-shared` otherwise.
     Raises:
         typer.Exit: Expected parameters contain validation errors.
     '''

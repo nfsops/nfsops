@@ -1,5 +1,11 @@
 # Contributing
 
+[![Releases](https://img.shields.io/github/v/release/nfsops/nfsops?color=blue)](https://github.com/nfsops/nfsops/releases)
+[![Issues](https://img.shields.io/github/issues/nfsops/nfsops?color=blue)](https://github.com/nfsops/nfsops/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/nfsops/nfsops?color=blue)](https://github.com/nfsops/nfsops/pulls)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://nfsops.readthedocs.io)
+[![License](https://img.shields.io/pypi/l/nfsops?color=blue)](https://nfsops.readthedocs.io/en/latest/license.html)
+
 ## Prerequisites
 
 * [Python (>=3.8.0)](https://www.python.org)

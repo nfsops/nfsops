@@ -32,7 +32,7 @@ class Operator(ABC):
 
         self.logger.info(
             'using context configuration %s.',
-            utils.format_configuration_string(self.context)
+            utils.format_configuration(self.context)
         )
 
 

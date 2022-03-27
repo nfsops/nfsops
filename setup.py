@@ -70,6 +70,8 @@ setup(
     install_requires=[
         'pydantic>=1.9.0',
         'typer>=0.4.0',
+        'tabulate>=0.8.0',
+        'datetime-glob>=1.0.0'
     ],
     extras_require={
         'development': [
@@ -85,7 +87,8 @@ setup(
             'myst-parser>=0.15.0',
             'pydata-sphinx-theme>=0.7.0',
             'twine>=3.7.0',
-            'bump2version>=1.0.0'
+            'bump2version>=1.0.0',
+            'types-tabulate>=0.8.0'
         ]
     },
     entry_points={

@@ -94,13 +94,17 @@ sphinx-build -b html nfsops/ build/
 
 ### List backup versions
 
+> **Warning** `version` is a temporary alias for backup `timestamp`.
+> Please do not restore backups without verify the backup timestamp using the `list` command.
+
 ```console
 nfsops backup list
 ```
 
 ### Restore and merge backup versions
 
-> **Warning** The `backup` command always restores the most recent files.
+> **Warning** The `restore` command restores the most recent files
+> for the current working directory.
 
 Restore and merge files from all backup versions:
 
@@ -108,13 +112,15 @@ Restore and merge files from all backup versions:
 nfsops backup restore *
 ```
 
+> **Note** This step will restore files from all backup versions.
+
 Restore and merge files from a single backup version:
 
 ```console
 nfsops backup restore 0
 ```
 
-> **Note** This step will restore the latest backup version.
+> **Note** This step will restore files from latest backup version.
 
 Restore and merge files from a range of backup versions:
 
@@ -122,15 +128,26 @@ Restore and merge files from a range of backup versions:
 nfsops backup restore 0 4
 ```
 
-> **Note** This step will restore the last 5 backup versions.
+> **Note** This step will restore files from last 5 backup versions.
 
 ```console
 nfsops backup restore 6 *
 ```
 
-> **Note** This step will restore all backup versions older than version 5.
+> **Note** This step will restore files from all backup versions older than version 5.
+
+Restore and merge `path/to/document.txt` from all backup versions:
+
+```console
+nfsops backup --filter-path path/to/document.txt restore *
+```
+
+> **Note** This step will restore `path/to/document.txt` file from all backup versions.
 
 ### Manage multiple backups using root context
+
+> **Warning** For root context, the `restore` command sets
+> the root template as the current working directory.
 
 Set up the environment variables below:
 
@@ -213,8 +230,6 @@ Please refer to the official [NFSops Documentation](https://nfsops.readthedocs.i
 
 ## TODOs
 
-- [ ] Filter support
-- [ ] Core implementation
 - [ ] Tests
 
 ## Copyright and license

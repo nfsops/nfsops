@@ -2,7 +2,7 @@
 Backup operator object.
 '''
 
-from datetime import datetime
+from operator import itemgetter
 from typing import List
 
 from .. import utils
@@ -30,6 +30,9 @@ class BackupOperator(Operator):
         Parameters:
             context (ContextConfiguration): Context configuration.
             configuration (BackupConfiguration): Backup configuration.
+        Raises:
+            ValueError: Expected name parameter is invalid for root context.
+            KeyError: Expected backup path not found for root context.
         '''
 
         super().__init__(context)
@@ -37,15 +40,44 @@ class BackupOperator(Operator):
 
         self.logger.info(
             'using backup configuration %s.',
-            utils.format_configuration_string(self.configuration)
+            utils.format_configuration(self.configuration)
         )
 
         if (
-            context.context != ContextType.ROOT and
+            self.context.context == ContextType.SUBPATH and
             self.configuration.name is not None
         ):
             self.logger.info(
-                f'ignoring [name={self.configuration.name}] parameter for non-root context.'
+                f'ignoring [backup.name={self.configuration.name}] parameter for non-root context.'
+            )
+
+        if self.context.context == ContextType.ROOT:
+            if self.configuration.name is None:
+                raise ValueError(
+                    '"name" parameter is required for root context.'
+                )
+
+            subpath_pattern = utils.expand_name_template(
+                utils.unwrap(self.context.root_template),
+                utils.unwrap(self.configuration.name)
+            )
+
+            subpaths = list(
+                utils.unwrap(self.context.path).glob(subpath_pattern)
+            )
+
+            if len(subpaths) != 1:
+                raise KeyError(
+                    'cannot find or infer backup path using name template.'
+                )
+
+            self.context.path = subpaths[0].absolute()
+
+        if self.configuration.filter_path is None:
+            self.configuration.filter_path = '**/*'
+
+            self.logger.info(
+                f'using [backup.filter_path={self.configuration.name}] as default parameter.'
             )
 
     def list_versions(self) -> List[BackupVersionConfiguration]:
@@ -54,22 +86,31 @@ class BackupOperator(Operator):
 
         Returns:
             List[BackupVersionConfiguration]: A list reporting available backup versions.
-        Raises:
-            Exception: Expected operation failed.
         '''
 
-        # TODO: implement it.
+        snapshot_path = utils.get_default_snapshot_path(
+            utils.unwrap(self.context.path)
+        )
 
-        return [
-            BackupVersionConfiguration(
-                version=0,
-                timestamp=datetime.now()
+        version_paths = sorted(
+            filter(
+                lambda result: result[0].is_dir(),
+                utils.glob_datetime(
+                    snapshot_path,
+                    self.configuration.version_template
+                )
             ),
+            reverse=True,
+            key=itemgetter(0)
+        )
+
+        return list(
             BackupVersionConfiguration(
-                version=1,
-                timestamp=datetime.now()
+                version=version_path[0],
+                timestamp=version_path[1][1]
             )
-        ]
+            for version_path in enumerate(version_paths)
+        )
 
     def restore(self, options: RestoreConfiguration) -> RestoreReportConfiguration:
         '''
@@ -83,9 +124,12 @@ class BackupOperator(Operator):
             Exception: Expected operation failed.
         '''
 
-        # TODO: implement it.
-
-        return RestoreReportConfiguration(version=0)
+        return RestoreReportConfiguration(
+            name='username',
+            filter_path='/home/user/*',
+            version=0,
+            final_version=0
+        )
 
 
 __all__ = [

@@ -10,10 +10,31 @@ import string
 from datetime import datetime, timezone
 from logging import Logger
 from pathlib import Path
+from typing import Any, Iterable, Optional, Sequence, Tuple
+
+import datetime_glob
+from tabulate import tabulate
 
 from . import package
 from .configurations.configuration import Configuration
 from .context_type import ContextType
+
+
+def unwrap(value: Optional[Any]) -> Any:
+    '''
+    Wrap optional value.
+    The value must be different from `None` to avoid runtime exception.
+
+    Parameters:
+        value (Optional[Any]): Optional value.
+    Returns:
+        Any: A non-optional value.
+    Raises:
+        AssertionError: Expected non-optional value is `None`.
+    '''
+
+    assert value is not None, 'cannot unwrap "None" value.'
+    return value
 
 
 def timezone_aware(date: datetime) -> datetime:
@@ -78,38 +99,51 @@ def get_default_logger() -> Logger:
     return logging.getLogger(package.__title__.lower())
 
 
-def get_default_volume_path(context: ContextType) -> Path:
+def get_default_context_path(context: ContextType) -> Path:
     '''
-    Return default volume path for context type.
+    Return default path for context type.
 
     Default values:
 
     - `ContextType.ROOT`: `/var/nfs-shared`
-    - `ContextType.SUBPATH`: `$HOME`
+    - `ContextType.SUBPATH`: `$PWD` (current working directory)
 
     Parameters:
         context (ContextType): Context type.
     Returns:
-        Path: A path object referencing the default volume path.
+        Path: A path object referencing the default path.
     '''
 
     default_mapping = {
         ContextType.ROOT: Path('/var/nfs-shared'),
-        ContextType.SUBPATH: Path().home()
+        ContextType.SUBPATH: Path.cwd()
     }
 
     return default_mapping[context]
 
 
-def format_configuration_string(configuration: Configuration) -> str:
+def get_default_snapshot_path(directory: Path):
+    '''
+    Return default snapshot path for a directory.
+
+    Parameters:
+        directory (Path): Directory path.
+    Returns:
+        Path: A path object referencing a snapshot.
+    '''
+
+    return directory / '.snapshot'
+
+
+def format_configuration(configuration: Configuration) -> str:
     '''
     Format configuration object to string using the formatting style
     `[key0=value0 key1=value1 ... keyn=valuen]`.
 
     Parameters:
-        configuration (Configuration): Configuration instance.
+        configuration (Configuration): Configuration object.
     Returns:
-        str: A single-line string using custom formatting style.
+        str: A single-line string representing the configuration object.
     '''
 
     parameters = json.loads(configuration.json(exclude={'type'}))
@@ -119,6 +153,30 @@ def format_configuration_string(configuration: Configuration) -> str:
     )
 
     return f'[{inner_string_content}]'
+
+
+def tabulate_configuration_group(configurations: Sequence[Configuration]) -> str:
+    '''
+    Format configuration group to string using a tabular style.
+
+    Parameters:
+        configurations (List[Configuration]): Configuration group.
+    Returns:
+        str: A string representing the configuration group as table.
+    '''
+
+    if len(configurations) == 0:
+        return 'No results'
+
+    groups = [
+        json.loads(configuration.json(exclude={'type'}))
+        for configuration in configurations
+    ]
+
+    table = [group.values() for group in groups]
+    headers = groups[0].keys()
+
+    return tabulate(table, headers=headers)
 
 
 def find_executable(name: str) -> Path:
@@ -178,11 +236,44 @@ def expand_name_template(template: str, name: str) -> str:
         ) from exception
 
 
+def glob_datetime(path: Path, pattern: str) -> Iterable[Tuple[Path, datetime]]:
+    '''
+    Match relative pattern with wildcards and datetime directives.
+
+    Parameters:
+        path (Path): Path object.
+        pattern (str): Relative pattern.
+    Returns:
+        Generator[Tuple[Path, datetime]]:
+            A generator of tuples with path and datetime objects for each match.
+    '''
+
+    path = path.absolute()
+    matcher = datetime_glob.Matcher(str(path / pattern))
+
+    match_results = filter(
+        lambda result: result[1] is not None,
+        map(
+            lambda path: (path, matcher.match(path)),
+            path.iterdir()
+        )
+    )
+
+    return (
+        (result[0], unwrap(result[1]).as_datetime())
+        for result in match_results
+    )
+
+
 __all__ = [
+    'unwrap',
     'timezone_aware',
     'get_default_logger',
-    'get_default_volume_path',
-    'format_configuration_string',
+    'get_default_context_path',
+    'get_default_snapshot_path',
+    'format_configuration',
+    'tabulate_configuration_group',
     'find_executable',
-    'expand_name_template'
+    'expand_name_template',
+    'glob_datetime'
 ]

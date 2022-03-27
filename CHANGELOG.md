@@ -4,4 +4,6 @@
 
 ### New features
 
+- List backup versions
 - Restore and merge backup versions
+- Root or single user management contexts
